@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste GA4 - Tracking de Vídeo (Site B)</title>
+
+<!--
+  ===========================================================================
+  COMO USAR ESTE ARQUIVO
+  ===========================================================================
+  Esta é a SEGUNDA página de teste, simulando uma marca/site diferente da
+  primeira (teste_ga4_video.html). A ideia é comparar dados entre fluxos
+  de dados distintos no GA4, como se fossem duas propriedades diferentes.
+
+  1. Crie um NOVO fluxo de dados Web no GA4 (Admin > Fluxos de dados >
+     Adicionar fluxo > Web), apontando para a URL desta página quando ela
+     estiver publicada.
+  2. Substitua "G-YYYYYYYYYY" abaixo (2 ocorrências) pelo Measurement ID
+     gerado para esse novo fluxo.
+  3. Suba este arquivo no mesmo repositório do GitHub (ou em outro, se
+     preferir simular domínios diferentes).
+  4. Compare os dois fluxos no GA4 em Admin > Fluxos de dados, ou rode
+     consultas separadas no BigQuery por property_id quando ambos
+     estiverem exportando.
+  ===========================================================================
+-->
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YYYYYYYYYY"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-YYYYYYYYYY');
+</script>
+
+<style>
+  body {
+    font-family: -apple-system, Arial, sans-serif;
+    max-width: 720px;
+    margin: 40px auto;
+    padding: 0 20px;
+    background: #f7f5fa;
+    color: #1a1a1a;
+  }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
+  .brand-badge {
+    display: inline-block;
+    background: #e6dffc;
+    color: #4a3b7a;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .video-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .video-card h3 { font-size: 15px; margin: 0 0 4px; }
+  .video-meta { font-size: 12px; color: #888; margin-bottom: 12px; }
+  video { width: 100%; border-radius: 8px; background: #000; display: block; }
+  .vertical-wrap { max-width: 220px; }
+  .log-panel {
+    background: #2a1a3a;
+    color: #d4b8f0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 24px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .log-panel .title { color: #fff; font-weight: bold; margin-bottom: 8px; }
+  .log-line { padding: 3px 0; border-bottom: 1px solid #4a3b6a; word-wrap: break-word; }
+  .event-name { color: #c9a3f5; }
+  .note {
+    background: #fff3cd;
+    border: 1px solid #ffe69c;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+</style>
+</head>
+<body>
+
+<span class="brand-badge">SITE B — TESTE COMPARATIVO</span>
+<h1>Teste de tracking de vídeo com GA4</h1>
+<p class="subtitle">Segunda propriedade de teste, para comparação com o Site A</p>
+
+<div class="note">
+  <strong>Antes de usar:</strong> substitua <code>G-YYYYYYYYYY</code> no código-fonte (2 lugares no &lt;head&gt;)
+  pelo Measurement ID real do fluxo de dados criado para este site B.
+</div>
+
+<div class="video-card">
+  <h3>Vídeo 1 — Click to play / Horizontal / Home</h3>
+  <div class="video-meta">video_play_mode: click_to_play · video_orientation: horizontal · video_location: home</div>
+  <video id="v1" controls playsinline data-title="siteb_video_1" data-mode="click_to_play" data-orientation="horizontal" data-location="home">
+    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" type="video/mp4">
+    Seu navegador não suporta vídeo HTML5.
+  </video>
+</div>
+
+<div class="video-card">
+  <div class="vertical-wrap">
+    <h3>Vídeo 2 — Autoplay / Vertical / Matéria</h3>
+    <div class="video-meta">video_play_mode: autoplay · video_orientation: vertical · video_location: materia</div>
+    <video id="v2" muted loop playsinline data-title="siteb_video_2" data-mode="autoplay" data-orientation="vertical" data-location="materia">
+      <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" type="video/mp4">
+      Seu navegador não suporta vídeo HTML5.
+    </video>
+  </div>
+</div>
+
+<div class="log-panel">
+  <div class="title">Eventos enviados ao GA4 (log local desta página)</div>
+  <div id="log"></div>
+</div>
+
+<script>
+// ===========================================================================
+// TRACKING DE VÍDEO PARA GA4 — SITE B
+// Mesma lógica de eventos da página do Site A, para garantir que os dados
+// sejam comparáveis entre as duas propriedades.
+// ===========================================================================
+
+function logToScreen(eventName, params) {
+  const logEl = document.getElementById('log');
+  const line = document.createElement('div');
+  line.className = 'log-line';
+  const paramStr = Object.entries(params).map(function(e) { return e[0] + '=' + e[1]; }).join(' | ');
+  const time = new Date().toLocaleTimeString('pt-BR');
+  line.innerHTML = '[' + time + '] <span class="event-name">' + eventName + '</span> — ' + paramStr;
+  logEl.insertBefore(line, logEl.firstChild);
+}
+
+function sendEvent(eventName, params) {
+  if (typeof gtag === 'function') {
+    gtag('event', eventName, params);
+  }
+  logToScreen(eventName, params);
+}
+
+function setupVideoTracking(videoEl) {
+  let started = false;
+  let milestonesFired = {};
+  const title = videoEl.dataset.title;
+  const mode = videoEl.dataset.mode;
+  const orientation = videoEl.dataset.orientation;
+  const location = videoEl.dataset.location;
+
+  videoEl.addEventListener('play', function() {
+    if (!started) {
+      started = true;
+      sendEvent('video_start', {
+        video_title: title,
+        video_play_mode: mode,
+        video_orientation: orientation,
+        video_location: location
+      });
+    }
+  });
+
+  videoEl.addEventListener('timeupdate', function() {
+    if (!videoEl.duration || isNaN(videoEl.duration)) return;
+    const pct = Math.floor((videoEl.currentTime / videoEl.duration) * 100);
+    [10, 25, 50, 75, 95].forEach(function(milestone) {
+      if (pct >= milestone && !milestonesFired[milestone]) {
+        milestonesFired[milestone] = true;
+        sendEvent('video_progress', {
+          video_title: title,
+          video_percent: milestone + '%',
+          video_play_mode: mode
+        });
+        if (milestone === 95) {
+          sendEvent('video_complete', {
+            video_title: title,
+            video_play_mode: mode,
+            video_orientation: orientation,
+            video_location: location
+          });
+        }
+      }
+    });
+  });
+
+  videoEl.addEventListener('pause', function() {
+    if (videoEl.currentTime > 0 && videoEl.currentTime < videoEl.duration) {
+      sendEvent('video_pause', {
+        video_title: title,
+        video_current_time: Math.floor(videoEl.currentTime) + 's'
+      });
+    }
+  });
+}
+
+document.querySelectorAll('video').forEach(setupVideoTracking);
+
+window.addEventListener('DOMContentLoaded', function() {
+  const v2 = document.getElementById('v2');
+  const playPromise = v2.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(function(err) {
+      console.log('Autoplay bloqueado pelo navegador:', err);
+    });
+  }
+});
+</script>
+
+</body>
+</html>
