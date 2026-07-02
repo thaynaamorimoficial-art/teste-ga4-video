@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambiente de Teste de Vídeo - Site C</title>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J8D2R9LE6F"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      // Desativa o tracker automático nativo do GA4 para evitar duplicidade de dados
+      gtag('config', 'G-J8D2R9LE6F', {
+        'video_engagement': false
+      });
+    </script>
+
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f5f5f7; color: #1d1d1f; }
+        .video-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .video-wrapper { position: relative; width: 100%; max-width: 560px; margin: 0 auto; background: #000; border-radius: 8px; overflow: hidden; }
+        .horizontal { aspect-ratio: 16 / 9; }
+        .vertical { max-width: 315px; aspect-ratio: 9 / 16; }
+        video { width: 100%; height: 100%; display: block; }
+        h1 { color: #0066cc; }
+        h2 { margin-top: 0; font-size: 1.2rem; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
+        .badge-home { background: #e3f2fd; color: #0d47a1; }
+        .badge-materia { background: #e8f5e9; color: #1b5e20; }
+        
+        /* Estilização dos Controles Customizados Forçados */
+        .custom-controls { display: flex; gap: 10px; justify-content: center; margin-top: 15px; padding: 5px; background: #eee; border-radius: 6px; }
+        .btn-control { background: #0066cc; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        .btn-control:hover { background: #004499; }
+        .btn-pause { background: #ff9900; }
+        .btn-pause:hover { background: #cc7700; }
+
+        #debug-log { background: #1e1e1e; color: #39ff14; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem; max-height: 200px; overflow-y: auto; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <h1>Métricas de Vídeo - Monitoramento Expandido (Site C)</h1>
+    <p>Interaja utilizando os botões de controle forçado para gerar massa de dados de progresso.</p>
+
+    <!-- VÍDEO 1: HORIZONTAL | CLICK TO PLAY | MATÉRIA -->
+    <div class="video-container">
+        <span class="badge badge-materia">Matéria</span>
+        <h2>Vídeo 1: Conteúdo Editorial (Horizontal - Click to Play)</h2>
+        <div class="video-wrapper horizontal">
+            <video id="vc1" preload="metadata" data-title="sitec_video_1_editorial" data-orientation="horizontal" data-location="materia">
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="custom-controls">
+            <button class="btn-control" onclick="forcePlay('vc1')">▶ FORÇAR PLAY</button>
+            <button class="btn-control btn-pause" onclick="forcePause('vc1')">⏸ PAUSAR</button>
+        </div>
+    </div>
+
+    <!-- VÍDEO 2: VERTICAL | AUTOPLAY MUTED | HOME -->
+    <div class="video-container">
+        <span class="badge badge-home">Home</span>
+        <h2>Vídeo 2: Reels Promocional (Vertical - Autoplay Muted)</h2>
+        <div class="video-wrapper vertical">
+            <video id="vc2" autoplay muted loop preload="metadata" data-title="sitec_video_2_reels" data-orientation="vertical" data-location="home">
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="custom-controls">
+            <button class="btn-control" onclick="forcePlay('vc2')">▶ FORÇAR PLAY</button>
+            <button class="btn-control btn-pause" onclick="forcePause('vc2')">⏸ PAUSAR</button>
+        </div>
+    </div>
+
+    <!-- VÍDEO 3: HORIZONTAL | AUTOPLAY MUTED | MATÉRIA -->
+    <div class="video-container">
+        <span class="badge badge-materia">Matéria</span>
+        <h2>Vídeo 3: Reportagem Especial (Horizontal - Autoplay Muted)</h2>
+        <div class="video-wrapper horizontal">
+            <video id="vc3" autoplay muted loop preload="metadata" data-title="sitec_video_3_reportagem" data-orientation="horizontal" data-location="materia">
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="custom-controls">
+            <button class="btn-control" onclick="forcePlay('vc3')">▶ FORÇAR PLAY</button>
+            <button class="btn-control btn-pause" onclick="forcePause('vc3')">⏸ PAUSAR</button>
+        </div>
+    </div>
+
+    <h3>Log de Eventos Locais (Console Simulado)</h3>
+    <div id="debug-log">Aguardando interações...</div>
+
+    <script>
+        const logDiv = document.getElementById('debug-log');
+        function logLocal(eventName, params) {
+            const time = new Date().toLocaleTimeString();
+            const logMsg = `[${time}] <strong>${eventName}</strong> — ${JSON.stringify(params)}<br>`;
+            if(logDiv.innerHTML === 'Aguardando interações...') logDiv.innerHTML = '';
+            logDiv.innerHTML = logMsg + logDiv.innerHTML;
+        }
+
+        function forcePlay(id) {
+            document.getElementById(id).play();
+        }
+        function forcePause(id) {
+            document.getElementById(id).pause();
+        }
+
+        function trackVideoEvent(eventName, videoEl, extraParams = {}) {
+            const playMode = videoEl.hasAttribute('autoplay') && videoEl.muted && !videoEl.paused && videoEl.currentTime < 1 ? 'autoplay' : 'click_to_play';
+            
+            const baseParams = {
+                'video_title': videoEl.getAttribute('data-title'),
+                'video_orientation': videoEl.getAttribute('data-orientation'),
+                'video_location': videoEl.getAttribute('data-location'),
+                'video_play_mode': playMode,
+                'video_duration': Math.round(videoEl.duration || 0),
+                'current_time': Math.round(videoEl.currentTime)
+            };
+
+            const finalParams = { ...baseParams, ...extraParams };
+            gtag('event', eventName, finalParams);
+            logLocal(eventName, finalParams);
+        }
+
+        document.querySelectorAll('video').forEach(video => {
+            let milestones = { 10: false, 25: false, 50: false, 75: false, 95: false };
+            let started = false;
+
+            video.addEventListener('play', function() {
+                if (!started) {
+                    trackVideoEvent('video_start', this);
+                    started = true;
+                }
+            });
+
+            video.addEventListener('timeupdate', function() {
+                if (!this.duration) return;
+                const percent = Math.round((this.currentTime / this.duration) * 100);
+                
+                [10, 25, 50, 75, 95].forEach(m => {
+                    if (percent >= m && !milestones[m]) {
+                        milestones[m] = true;
+                        trackVideoEvent('video_progress', this, { 'video_percent': m });
+                    }
+                });
+            });
+
+            video.addEventListener('ended', function() {
+                trackVideoEvent('video_complete', this, { 'video_percent': 100 });
+                started = false;
+                milestones = { 10: false, 25: false, 50: false, 75: false, 95: false };
+            });
+        });
+    </script>
+</body>
+</html>
