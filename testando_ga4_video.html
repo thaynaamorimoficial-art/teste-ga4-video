@@ -1,231 +1,151 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Teste GA4 - Tracking de Vídeo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambiente de Teste de Vídeo - Site A</title>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J8D2R9LE6F"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
 
-<!--
-  ===========================================================================
-  COMO USAR ESTE ARQUIVO
-  ===========================================================================
-  1. Substitua "G-J8D2R9LE6F" abaixo (2 ocorrências) pelo seu Measurement ID
-     real do GA4. Você encontra em: Admin > Fluxos de dados > [seu fluxo] >
-     Measurement ID (formato G-J8D2R9LE6F)
-  2. Suba este arquivo em qualquer hospedagem (GitHub Pages, servidor próprio,
-     Netlify, etc). Não funciona abrindo o arquivo localmente (file://) porque
-     o GA4 exige http/https.
-  3. Abra a página pelo link público e interaja com os vídeos.
-  4. Veja os eventos chegando em tempo real em:
-     GA4 > Relatórios > Tempo real > Eventos (já aparece em segundos)
-  5. Para conferir no BigQuery, espere o export diário (ou ative o export
-     streaming nas configurações de vinculação do BigQuery no GA4 para ver
-     em minutos).
-  ===========================================================================
--->
+      // Desativa o tracker automático nativo para evitar duplicidade
+      gtag('config', 'G-J8D2R9LE6F', {
+        'video_engagement': false
+      });
+    </script>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-J8D2R9LE6F');
-</script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f5f5f7; color: #1d1d1f; }
+        .video-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .video-wrapper { position: relative; width: 100%; max-width: 560px; margin: 0 auto; background: #000; border-radius: 8px; overflow: hidden; }
+        .horizontal { aspect-ratio: 16 / 9; }
+        .vertical { max-width: 315px; aspect-ratio: 9 / 16; }
+        video { width: 100%; height: 100%; display: block; }
+        h1 { color: #0066cc; }
+        h2 { margin-top: 0; font-size: 1.2rem; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
+        .badge-home { background: #e3f2fd; color: #0d47a1; }
+        .badge-materia { background: #e8f5e9; color: #1b5e20; }
+        
+        /* Controles Customizados */
+        .custom-controls { display: flex; gap: 10px; justify-content: center; margin-top: 15px; padding: 5px; background: #eee; border-radius: 6px; }
+        .btn-control { background: #0066cc; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        .btn-control:hover { background: #004499; }
+        .btn-pause { background: #ff9900; }
+        .btn-pause:hover { background: #cc7700; }
 
-<style>
-  body {
-    font-family: -apple-system, Arial, sans-serif;
-    max-width: 720px;
-    margin: 40px auto;
-    padding: 0 20px;
-    background: #fafafa;
-    color: #1a1a1a;
-  }
-  h1 { font-size: 22px; margin-bottom: 4px; }
-  .subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
-  .video-card {
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 20px;
-  }
-  .video-card h3 { font-size: 15px; margin: 0 0 4px; }
-  .video-meta { font-size: 12px; color: #888; margin-bottom: 12px; }
-  video { width: 100%; border-radius: 8px; background: #000; display: block; }
-  .vertical-wrap { max-width: 220px; }
-  .log-panel {
-    background: #1a1a1a;
-    color: #b8e6b8;
-    border-radius: 12px;
-    padding: 16px;
-    margin-top: 24px;
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-  .log-panel .title { color: #fff; font-weight: bold; margin-bottom: 8px; }
-  .log-line { padding: 3px 0; border-bottom: 1px solid #333; word-wrap: break-word; }
-  .event-name { color: #7fd4ff; }
-  .note {
-    background: #fff3cd;
-    border: 1px solid #ffe69c;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 13px;
-    margin-bottom: 24px;
-  }
-</style>
+        #debug-log { background: #1e1e1e; color: #39ff14; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem; max-height: 200px; overflow-y: auto; margin-top: 15px; }
+    </style>
 </head>
 <body>
 
-<h1>Teste de tracking de vídeo com GA4</h1>
-<p class="subtitle">Página de teste para validar eventos de vídeo antes de implementar em produção</p>
+    <h1>Métricas de Vídeo - Controle Forçado (Site A)</h1>
+    <p>Use os botões coloridos abaixo dos vídeos para dar Play e Pausa de forma garantida.</p>
 
-<div class="note">
-  <strong>Antes de usar:</strong> substitua <code>G-J8D2R9LE6F</code> no código-fonte (2 lugares no &lt;head&gt;)
-  pelo seu Measurement ID real do GA4. Depois, acompanhe os eventos chegando em
-  <strong>GA4 → Relatórios → Tempo real</strong>.
-</div>
+    <!-- VÍDEO 1: HORIZONTAL | AUTOPLAY MUTED | HOME -->
+    <div class="video-container">
+        <span class="badge badge-home">Home</span>
+        <h2>Vídeo 1: Clipe Curto (Horizontal - Autoplay Muted)</h2>
+        <div class="video-wrapper horizontal">
+            <video id="v1" autoplay muted loop preload="metadata" data-title="video_1_autoplay" data-orientation="horizontal" data-location="home">
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="custom-controls">
+            <button class="btn-control" onclick="forcePlay('v1')">▶ FORÇAR PLAY</button>
+            <button class="btn-control btn-pause" onclick="forcePause('v1')">⏸ PAUSAR</button>
+        </div>
+    </div>
 
-<div class="video-card">
-  <h3>Vídeo 1 — Autoplay / Horizontal / Home</h3>
-  <div class="video-meta">video_play_mode: autoplay · video_orientation: horizontal · video_location: home</div>
-  <video id="v1" muted loop playsinline data-title="video_1_autoplay" data-mode="autoplay" data-orientation="horizontal" data-location="home">
-    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
-    Seu navegador não suporta vídeo HTML5.
-  </video>
-</div>
+    <!-- VÍDEO 2: VERTICAL | CLICK TO PLAY | MATÉRIA -->
+    <div class="video-container">
+        <span class="badge badge-materia">Matéria</span>
+        <h2>Vídeo 2: Reels Simulado (Vertical - Click to Play)</h2>
+        <div class="video-wrapper vertical">
+            <video id="v2" preload="metadata" data-title="video_2_click" data-orientation="vertical" data-location="materia">
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="custom-controls">
+            <button class="btn-control" onclick="forcePlay('v2')">▶ FORÇAR PLAY</button>
+            <button class="btn-control btn-pause" onclick="forcePause('v2')">⏸ PAUSAR</button>
+        </div>
+    </div>
 
-<div class="video-card">
-  <div class="vertical-wrap">
-    <h3>Vídeo 2 — Click to play / Vertical / Matéria</h3>
-    <div class="video-meta">video_play_mode: click_to_play · video_orientation: vertical · video_location: materia</div>
-    <video id="v2" controls playsinline data-title="video_2_click" data-mode="click_to_play" data-orientation="vertical" data-location="materia">
-      <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
-      Seu navegador não suporta vídeo HTML5.
-    </video>
-  </div>
-</div>
+    <h3>Log de Eventos Locais (Console Simulado)</h3>
+    <div id="debug-log">Aguardando interações...</div>
 
-<div class="log-panel">
-  <div class="title">Eventos enviados ao GA4 (log local desta página)</div>
-  <div id="log"></div>
-</div>
-
-<script>
-// ===========================================================================
-// TRACKING DE VÍDEO PARA GA4
-// ===========================================================================
-// Estratégia de eventos:
-//   video_start      -> dispara uma vez, no primeiro play
-//   video_progress   -> dispara nos milestones 10/25/50/75/95%
-//   video_complete   -> dispara quando atinge o milestone de 95% (tratado
-//                       como "completude" para efeito de taxa de retenção)
-//   video_pause      -> dispara quando o usuário pausa manualmente
-//
-// Parâmetros customizados enviados em cada evento:
-//   video_title        -> identificador do vídeo (idealmente o ID real do CMS)
-//   video_play_mode     -> "autoplay" ou "click_to_play"
-//   video_orientation   -> "horizontal" ou "vertical"
-//   video_location      -> "home" ou "materia"
-//   video_current_time  -> usado no evento de pausa, em segundos
-//   video_percent       -> usado no evento de progresso
-//
-// IMPORTANTE: para o GA4 reconhecer video_percent como dimensão custom,
-// é preciso registrar esses parâmetros em Admin > Definições personalizadas
-// > Criar dimensões/métricas personalizadas, ou eles não aparecerão nos
-// relatórios padrão (mas continuarão disponíveis no BigQuery).
-// ===========================================================================
-
-function logToScreen(eventName, params) {
-  const logEl = document.getElementById('log');
-  const line = document.createElement('div');
-  line.className = 'log-line';
-  const paramStr = Object.entries(params).map(function(e) { return e[0] + '=' + e[1]; }).join(' | ');
-  const time = new Date().toLocaleTimeString('pt-BR');
-  line.innerHTML = '[' + time + '] <span class="event-name">' + eventName + '</span> — ' + paramStr;
-  logEl.insertBefore(line, logEl.firstChild);
-}
-
-function sendEvent(eventName, params) {
-  // Envia o evento real para o GA4
-  if (typeof gtag === 'function') {
-    gtag('event', eventName, params);
-  }
-  // Loga na tela para conferência visual durante o teste
-  logToScreen(eventName, params);
-}
-
-function setupVideoTracking(videoEl) {
-  let started = false;
-  let milestonesFired = {};
-  const title = videoEl.dataset.title;
-  const mode = videoEl.dataset.mode;
-  const orientation = videoEl.dataset.orientation;
-  const location = videoEl.dataset.location;
-
-  videoEl.addEventListener('play', function() {
-    if (!started) {
-      started = true;
-      sendEvent('video_start', {
-        video_title: title,
-        video_play_mode: mode,
-        video_orientation: orientation,
-        video_location: location
-      });
-    }
-  });
-
-  videoEl.addEventListener('timeupdate', function() {
-    if (!videoEl.duration || isNaN(videoEl.duration)) return;
-    const pct = Math.floor((videoEl.currentTime / videoEl.duration) * 100);
-    [10, 25, 50, 75, 95].forEach(function(milestone) {
-      if (pct >= milestone && !milestonesFired[milestone]) {
-        milestonesFired[milestone] = true;
-        sendEvent('video_progress', {
-          video_title: title,
-          video_percent: milestone + '%',
-          video_play_mode: mode
-        });
-        if (milestone === 95) {
-          sendEvent('video_complete', {
-            video_title: title,
-            video_play_mode: mode,
-            video_orientation: orientation,
-            video_location: location
-          });
+    <script>
+        const logDiv = document.getElementById('debug-log');
+        function logLocal(eventName, params) {
+            const time = new Date().toLocaleTimeString();
+            const logMsg = `[${time}] <strong>${eventName}</strong> — ${JSON.stringify(params)}<br>`;
+            if(logDiv.innerHTML === 'Aguardando interações...') logDiv.innerHTML = '';
+            logDiv.innerHTML = logMsg + logDiv.innerHTML;
         }
-      }
-    });
-  });
 
-  videoEl.addEventListener('pause', function() {
-    if (videoEl.currentTime > 0 && videoEl.currentTime < videoEl.duration) {
-      sendEvent('video_pause', {
-        video_title: title,
-        video_current_time: Math.floor(videoEl.currentTime) + 's'
-      });
-    }
-  });
-}
+        // Funções de Controle Forçado via Botão HTML
+        function forcePlay(id) {
+            const video = document.getElementById(id);
+            video.play();
+        }
+        function forcePause(id) {
+            const video = document.getElementById(id);
+            video.pause();
+        }
 
-document.querySelectorAll('video').forEach(setupVideoTracking);
+        function trackVideoEvent(eventName, videoEl, extraParams = {}) {
+            const playMode = videoEl.hasAttribute('autoplay') && videoEl.muted && !videoEl.paused && videoEl.currentTime < 1 ? 'autoplay' : 'click_to_play';
+            
+            const baseParams = {
+                'video_title': videoEl.getAttribute('data-title'),
+                'video_orientation': videoEl.getAttribute('data-orientation'),
+                'video_location': videoEl.getAttribute('data-location'),
+                'video_play_mode': playMode,
+                'video_duration': Math.round(videoEl.duration || 0),
+                'current_time': Math.round(videoEl.currentTime)
+            };
 
-// Autoplay do vídeo 1 (alguns navegadores bloqueiam autoplay com áudio,
-// por isso o vídeo está mutado)
-window.addEventListener('DOMContentLoaded', function() {
-  const v1 = document.getElementById('v1');
-  const playPromise = v1.play();
-  if (playPromise !== undefined) {
-    playPromise.catch(function(err) {
-      console.log('Autoplay bloqueado pelo navegador:', err);
-    });
-  }
-});
-</script>
+            const finalParams = { ...baseParams, ...extraParams };
+            gtag('event', eventName, finalParams);
+            logLocal(eventName, finalParams);
+        }
 
+        document.querySelectorAll('video').forEach(video => {
+            // Mapeando todos os marcos solicitados pelo projeto modelo
+            let milestones = { 10: false, 25: false, 50: false, 75: false, 95: false };
+            let started = false;
+
+            video.addEventListener('play', function() {
+                if (!started) {
+                    trackVideoEvent('video_start', this);
+                    started = true;
+                }
+            });
+
+            video.addEventListener('timeupdate', function() {
+                if (!this.duration) return;
+                const percent = Math.round((this.currentTime / this.duration) * 100);
+                
+                [10, 25, 50, 75, 95].forEach(m => {
+                    if (percent >= m && !milestones[m]) {
+                        milestones[m] = true;
+                        trackVideoEvent('video_progress', this, { 'video_percent': m });
+                    }
+                });
+            });
+
+            video.addEventListener('ended', function() {
+                trackVideoEvent('video_complete', this, { 'video_percent': 100 });
+                // Reset estruturado
+                started = false;
+                milestones = { 10: false, 25: false, 50: false, 75: false, 95: false };
+            });
+        });
+    </script>
 </body>
 </html>
